@@ -84,16 +84,29 @@ func (t *TPM2B_NAME) getBytes() []byte {
 
 type tpm_alg_hash int
 
+const (
+	tpm_alg_hash_sha256 tpm_alg_hash = 0x00B
+)
+
 func (t tpm_alg_hash) algHdr() []byte {
 	alghdr := make([]byte, 2)
 	binary.BigEndian.PutUint16(alghdr[0:2], uint16(t))
 	return alghdr
 }
 
+func (t tpm_alg_hash) ToCryptoHash() crypto.Hash {
+	switch t {
+	case tpm_alg_hash_sha256:
+		return crypto.SHA256
+	default:
+		panic("Unsupported hash type requested")
+	}
+}
+
 func tpm_alg_hash_from_crypto_hash(h crypto.Hash) tpm_alg_hash {
 	switch h {
 	case crypto.SHA256:
-		return tpm_alg_hash(0x000B)
+		return tpm_alg_hash_sha256
 	default:
 		panic("Unsupported hash type requested")
 	}
