@@ -232,7 +232,7 @@ func (p *PcrSelection) getSelection() ([]byte, error) {
 	return buf.Bytes(), err
 }
 
-func (p *PcrSelection) getDigest() ([]byte, error) {
+func (p *PcrSelection) GetDigest() ([]byte, error) {
 	buf := new(bytes.Buffer)
 
 	err := p.loopInOrder(func(alg_id tpm_alg_hash, pcrid int, val []byte) error {

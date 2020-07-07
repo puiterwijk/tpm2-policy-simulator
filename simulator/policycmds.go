@@ -49,7 +49,7 @@ func (s *Tpm2PolicySimulator) PolicyPCR(sel *PcrSelection) error {
 	if err != nil {
 		return fmt.Errorf("Error getting PCRs: %s", err)
 	}
-	pcrDigest, err := sel.getDigest()
+	pcrDigest, err := sel.GetDigest()
 	if err != nil {
 		return fmt.Errorf("Error getting PCR digest: %s", err)
 	}

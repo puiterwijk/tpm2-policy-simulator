@@ -98,7 +98,7 @@ func TestPcrSelection(t *testing.T) {
 	sel.AddSelection(crypto.SHA256, 1, []byte{0x1, 0x2})
 	sel.AddSelection(crypto.SHA256, 19, []byte{0x5, 0x6})
 
-	digest, err := sel.getDigest()
+	digest, err := sel.GetDigest()
 	if err != nil {
 		t.Errorf("Error getting digest: %s", err)
 	}
