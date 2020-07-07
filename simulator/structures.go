@@ -122,6 +122,33 @@ func NewPcrSelection() *PcrSelection {
 	}
 }
 
+func (p *PcrSelection) GetHashAlgos() []tpm_alg_hash {
+	algs := make([]int, len(p.selections))
+	i := 0
+	for algid := range p.selections {
+		algs[i] = int(algid)
+		i++
+	}
+	sort.Ints(algs)
+	algsR := make([]tpm_alg_hash, len(algs))
+	for i, alg := range algs {
+		algsR[i] = tpm_alg_hash(alg)
+	}
+	return algsR
+}
+
+func (p *PcrSelection) GetPcrIDs(hashalg tpm_alg_hash) []int {
+	sel := p.selections[hashalg]
+	pcrids := make([]int, len(sel))
+	i := 0
+	for pcrid := range sel {
+		pcrids[i] = pcrid
+		i++
+	}
+	sort.Ints(pcrids)
+	return pcrids
+}
+
 func (p *PcrSelection) AddSelection(hash crypto.Hash, pcrid int, val []byte) error {
 	algid := tpm_alg_hash_from_crypto_hash(hash)
 	_, ok := p.selections[algid]
@@ -137,22 +164,10 @@ func (p *PcrSelection) AddSelection(hash crypto.Hash, pcrid int, val []byte) err
 }
 
 func (p *PcrSelection) loopInOrder(f func(alg_id tpm_alg_hash, pcrid int, val []byte) error) error {
-	algs := make([]int, len(p.selections))
-	i := 0
-	for algid := range p.selections {
-		algs[i] = int(algid)
-		i++
-	}
-	sort.Ints(algs)
+	algs := p.GetHashAlgos()
 
 	for _, algid := range algs {
-		pcrids := make([]int, len(p.selections[tpm_alg_hash(algid)]))
-		j := 0
-		for pcrid := range p.selections[tpm_alg_hash(algid)] {
-			pcrids[j] = pcrid
-			j++
-		}
-		sort.Ints(pcrids)
+		pcrids := p.GetPcrIDs(algid)
 
 		for _, pcrid := range pcrids {
 			if err := f(tpm_alg_hash(algid), pcrid, p.selections[tpm_alg_hash(algid)][pcrid]); err != nil {
