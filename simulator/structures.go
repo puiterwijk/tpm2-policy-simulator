@@ -137,6 +137,10 @@ func (p *PcrSelection) GetHashAlgos() []tpm_alg_hash {
 	return algsR
 }
 
+func (p *PcrSelection) GetValues(hashalg tpm_alg_hash) map[int][]byte {
+	return p.selections[hashalg]
+}
+
 func (p *PcrSelection) GetPcrIDs(hashalg tpm_alg_hash) []int {
 	sel := p.selections[hashalg]
 	pcrids := make([]int, len(sel))
